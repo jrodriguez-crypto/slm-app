@@ -1,13 +1,14 @@
 {
   "name": "SLM Abogados — Expedientes",
   "short_name": "SLM Casos",
-  "start_url": "./index.html",
+  "start_url": "/",
   "display": "standalone",
   "background_color": "#F4F3EF",
   "theme_color": "#1A1F2E",
+  "orientation": "portrait-primary",
   "icons": [
     {
-      "src": "icon.png",
+      "src": "/icon.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
