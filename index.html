@@ -110,6 +110,8 @@ header{background:var(--ink);color:var(--white);padding:12px 16px;display:flex;a
 .exp-type.civil{color:var(--civil);}.exp-type.penal{color:var(--penal);}.exp-type.admin{color:var(--admin);}.exp-type.cdh{color:var(--cdh);}
 .exp-input{width:100%;border:none;background:transparent;font-family:'DM Sans',sans-serif;font-size:.82rem;color:var(--ink);outline:none;}
 .exp-input::placeholder{color:var(--muted);}
+.exp-notas{width:100%;border:none;border-top:1px solid rgba(0,0,0,.08);background:transparent;font-family:'DM Sans',sans-serif;font-size:.78rem;color:var(--slate);outline:none;resize:none;min-height:60px;margin-top:6px;padding-top:6px;line-height:1.5;}
+.exp-notas::placeholder{color:var(--muted);}
 .notas-list{display:flex;flex-direction:column;gap:7px;margin-bottom:10px;}
 .nota-item{background:var(--paper);border:1px solid #E0DED8;border-radius:8px;padding:9px 12px;}
 .nota-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:3px;}
@@ -238,10 +240,10 @@ header{background:var(--ink);color:var(--white);padding:12px 16px;display:flex;a
     <div class="modal-body">
       <div class="section-label">Expedientes</div>
       <div class="exp-grid">
-        <div class="exp-slot" id="slot-civil"><div class="exp-type civil">Civil</div><input class="exp-input" id="exp-civil" placeholder="Núm. expediente..."><input class="exp-input" id="exp-civil-link" placeholder="Link carpeta Drive..." style="margin-top:4px;font-size:.72rem;color:var(--civil)"></div>
-        <div class="exp-slot" id="slot-penal"><div class="exp-type penal">Penal</div><input class="exp-input" id="exp-penal" placeholder="Núm. expediente..."><input class="exp-input" id="exp-penal-link" placeholder="Link carpeta Drive..." style="margin-top:4px;font-size:.72rem;color:var(--penal)"></div>
-        <div class="exp-slot" id="slot-admin"><div class="exp-type admin">Administrativa</div><input class="exp-input" id="exp-admin" placeholder="Núm. expediente..."><input class="exp-input" id="exp-admin-link" placeholder="Link carpeta Drive..." style="margin-top:4px;font-size:.72rem;color:var(--admin)"></div>
-        <div class="exp-slot" id="slot-cdh"><div class="exp-type cdh">CDH</div><input class="exp-input" id="exp-cdh" placeholder="Núm. expediente..."><input class="exp-input" id="exp-cdh-link" placeholder="Link carpeta Drive..." style="margin-top:4px;font-size:.72rem;color:var(--cdh)"></div>
+        <div class="exp-slot" id="slot-civil"><div class="exp-type civil">Civil</div><input class="exp-input" id="exp-civil" placeholder="Núm. expediente..."><textarea class="exp-notas" id="exp-civil-notas" placeholder="Notas del expediente civil..."></textarea></div>
+        <div class="exp-slot" id="slot-penal"><div class="exp-type penal">Penal</div><input class="exp-input" id="exp-penal" placeholder="Núm. expediente..."><textarea class="exp-notas" id="exp-penal-notas" placeholder="Notas del expediente penal..."></textarea></div>
+        <div class="exp-slot" id="slot-admin"><div class="exp-type admin">Administrativa</div><input class="exp-input" id="exp-admin" placeholder="Núm. expediente..."><textarea class="exp-notas" id="exp-admin-notas" placeholder="Notas del expediente admin..."></textarea></div>
+        <div class="exp-slot" id="slot-cdh"><div class="exp-type cdh">CDH</div><input class="exp-input" id="exp-cdh" placeholder="Núm. expediente..."><textarea class="exp-notas" id="exp-cdh-notas" placeholder="Notas del expediente CDH..."></textarea></div>
       </div>
       <div class="section-label" style="display:flex;justify-content:space-between;align-items:center">
         <span>📁 Carpetas adicionales</span>
@@ -392,8 +394,8 @@ async function loadData(){
       expedientes: {
         civil:c.expediente_civil||'', penal:c.expediente_penal||'',
         admin:c.expediente_admin||'', cdh:c.expediente_cdh||'',
-        civil_link:c.link_civil||'', penal_link:c.link_penal||'',
-        admin_link:c.link_admin||'', cdh_link:c.link_cdh||'',
+        civil_notas:c.notas_civil||'', penal_notas:c.notas_penal||'',
+        admin_notas:c.notas_admin||'', cdh_notas:c.notas_cdh||'',
       },
       carpetas: c.carpetas ? JSON.parse(c.carpetas) : [],
       notas: notas.filter(n=>n.cliente_id===c.id).map(n=>({
@@ -476,7 +478,7 @@ function openCase(driveId){
   document.getElementById('modal-badges').innerHTML=tipos.map(t=>`<span class="badge ${t}">${labelT(t)}</span>`).join('');
   ['civil','penal','admin','cdh'].forEach(t=>{
     document.getElementById('exp-'+t).value=c.expedientes[t]||'';
-    document.getElementById('exp-'+t+'-link').value=c.expedientes[t+'_link']||'';
+    document.getElementById('exp-'+t+'-notas').value=c.expedientes[t+'_notas']||'';
     document.getElementById('slot-'+t).className=`exp-slot${c.expedientes[t]?.trim()?' has-data '+t:''}`;
   });
   document.getElementById('drive-link').href=`https://drive.google.com/drive/folders/${driveId}`;
@@ -592,10 +594,10 @@ async function saveCase(){
       expediente_penal:c.expedientes.penal,
       expediente_admin:c.expedientes.admin,
       expediente_cdh:c.expedientes.cdh,
-      link_civil:c.expedientes.civil_link,
-      link_penal:c.expedientes.penal_link,
-      link_admin:c.expedientes.admin_link,
-      link_cdh:c.expedientes.cdh_link,
+      notas_civil:c.expedientes.civil_notas,
+      notas_penal:c.expedientes.penal_notas,
+      notas_admin:c.expedientes.admin_notas,
+      notas_cdh:c.expedientes.cdh_notas,
       carpetas:JSON.stringify(c.carpetas||[]),
     }]);
     setSyncDot('ok');
