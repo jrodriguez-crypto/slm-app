@@ -9,30 +9,6 @@
 <meta name="apple-mobile-web-app-title" content="SLM Casos">
 <meta name="theme-color" content="#1A1F2E">
 <link rel="manifest" href="manifest.json">
-<script>
-// Override manifest with inline version
-const _m = {
-  name:"SLM Abogados — Expedientes",
-  short_name:"SLM Casos",
-  start_url:"https://iridescent-concha-6f8728.netlify.app/",
-  scope:"https://iridescent-concha-6f8728.netlify.app/",
-  display:"standalone",
-  background_color:"#F4F3EF",
-  theme_color:"#1A1F2E",
-  icons:[
-    {src:"https://iridescent-concha-6f8728.netlify.app/icon.png",sizes:"192x192",type:"image/png",purpose:"any maskable"},
-    {src:"https://iridescent-concha-6f8728.netlify.app/icon.png",sizes:"512x512",type:"image/png",purpose:"any maskable"}
-  ],
-  screenshots:[
-    {src:"https://iridescent-concha-6f8728.netlify.app/icon.png",sizes:"192x192",type:"image/png",form_factor:"narrow"},
-    {src:"https://iridescent-concha-6f8728.netlify.app/icon.png",sizes:"192x192",type:"image/png",form_factor:"wide"}
-  ]
-};
-const _mb=new Blob([JSON.stringify(_m)],{type:'application/json'});
-const _ml=document.createElement('link');
-_ml.rel='manifest';_ml.href=URL.createObjectURL(_mb);
-document.addEventListener('DOMContentLoaded',()=>document.head.appendChild(_ml));
-</script>
 
 <style>
 @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@400;500;600&display=swap');
@@ -134,8 +110,6 @@ header{background:var(--ink);color:var(--white);padding:12px 16px;display:flex;a
 .exp-type.civil{color:var(--civil);}.exp-type.penal{color:var(--penal);}.exp-type.admin{color:var(--admin);}.exp-type.cdh{color:var(--cdh);}
 .exp-input{width:100%;border:none;background:transparent;font-family:'DM Sans',sans-serif;font-size:.82rem;color:var(--ink);outline:none;}
 .exp-input::placeholder{color:var(--muted);}
-.exp-notas{width:100%;border:none;border-top:1px solid rgba(0,0,0,.08);background:transparent;font-family:'DM Sans',sans-serif;font-size:.79rem;color:var(--slate);outline:none;resize:none;min-height:55px;margin-top:6px;padding-top:6px;line-height:1.5;}
-.exp-notas::placeholder{color:var(--muted);}
 .notas-list{display:flex;flex-direction:column;gap:7px;margin-bottom:10px;}
 .nota-item{background:var(--paper);border:1px solid #E0DED8;border-radius:8px;padding:9px 12px;}
 .nota-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:3px;}
@@ -180,6 +154,13 @@ header{background:var(--ink);color:var(--white);padding:12px 16px;display:flex;a
 .empty-state{text-align:center;padding:40px 20px;color:var(--muted);}
 .empty-state .icon{font-size:2rem;margin-bottom:8px;opacity:.4;}
 .loading-state{text-align:center;padding:40px;color:var(--muted);font-size:.88rem;}
+
+.carpeta-item{display:flex;align-items:center;gap:8px;background:var(--paper);border:1px solid #E0DED8;border-radius:8px;padding:8px 12px;margin-bottom:6px;}
+.carpeta-item a{flex:1;font-size:.82rem;font-weight:600;color:var(--civil);text-decoration:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.carpeta-item a:hover{color:var(--gold);}
+.carpeta-item .carpeta-name{font-size:.75rem;color:var(--muted);min-width:80px;}
+.btn-del-carpeta{background:none;border:none;color:var(--muted);cursor:pointer;font-size:.85rem;padding:2px;}
+.btn-del-carpeta:hover{color:var(--danger);}
 
 #install-banner{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--ink);border-top:2px solid var(--gold);color:var(--white);padding:11px 15px;align-items:center;gap:10px;z-index:300;}
 #install-banner .t{flex:1;font-size:.82rem;}
@@ -257,11 +238,16 @@ header{background:var(--ink);color:var(--white);padding:12px 16px;display:flex;a
     <div class="modal-body">
       <div class="section-label">Expedientes</div>
       <div class="exp-grid">
-        <div class="exp-slot" id="slot-civil"><div class="exp-type civil">Civil</div><input class="exp-input" id="exp-civil" placeholder="Núm. expediente..."><textarea class="exp-notas" id="exp-civil-notas" placeholder="Notas del expediente..."></textarea></div>
-        <div class="exp-slot" id="slot-penal"><div class="exp-type penal">Penal</div><input class="exp-input" id="exp-penal" placeholder="Núm. expediente..."><textarea class="exp-notas" id="exp-penal-notas" placeholder="Notas del expediente..."></textarea></div>
-        <div class="exp-slot" id="slot-admin"><div class="exp-type admin">Administrativa</div><input class="exp-input" id="exp-admin" placeholder="Núm. expediente..."><textarea class="exp-notas" id="exp-admin-notas" placeholder="Notas del expediente..."></textarea></div>
-        <div class="exp-slot" id="slot-cdh"><div class="exp-type cdh">CDH</div><input class="exp-input" id="exp-cdh" placeholder="Núm. expediente..."><textarea class="exp-notas" id="exp-cdh-notas" placeholder="Notas del expediente..."></textarea></div>
+        <div class="exp-slot" id="slot-civil"><div class="exp-type civil">Civil</div><input class="exp-input" id="exp-civil" placeholder="Núm. expediente..."><input class="exp-input" id="exp-civil-link" placeholder="Link carpeta Drive..." style="margin-top:4px;font-size:.72rem;color:var(--civil)"></div>
+        <div class="exp-slot" id="slot-penal"><div class="exp-type penal">Penal</div><input class="exp-input" id="exp-penal" placeholder="Núm. expediente..."><input class="exp-input" id="exp-penal-link" placeholder="Link carpeta Drive..." style="margin-top:4px;font-size:.72rem;color:var(--penal)"></div>
+        <div class="exp-slot" id="slot-admin"><div class="exp-type admin">Administrativa</div><input class="exp-input" id="exp-admin" placeholder="Núm. expediente..."><input class="exp-input" id="exp-admin-link" placeholder="Link carpeta Drive..." style="margin-top:4px;font-size:.72rem;color:var(--admin)"></div>
+        <div class="exp-slot" id="slot-cdh"><div class="exp-type cdh">CDH</div><input class="exp-input" id="exp-cdh" placeholder="Núm. expediente..."><input class="exp-input" id="exp-cdh-link" placeholder="Link carpeta Drive..." style="margin-top:4px;font-size:.72rem;color:var(--cdh)"></div>
       </div>
+      <div class="section-label" style="display:flex;justify-content:space-between;align-items:center">
+        <span>📁 Carpetas adicionales</span>
+        <button class="btn btn-dark" style="font-size:.7rem;padding:4px 10px" onclick="addCarpeta()">+ Carpeta</button>
+      </div>
+      <div id="carpetas-list"></div>
       <div class="section-label">Notas, pendientes y citas</div>
       <div class="notas-list" id="notas-list"></div>
       <div class="nueva-nota-form">
@@ -389,18 +375,16 @@ async function loadData(){
   try {
     // Seed clientes que no existen aún
     const existing = await sbGet('clientes','select=id');
-    if(!Array.isArray(existing)) throw new Error('Error cargando: '+JSON.stringify(existing));
-    const existingIds = existing.map(c=>c.id);
+    const existingIds = Array.isArray(existing) ? existing.map(c=>c.id) : [];
     const toInsert = DRIVE_BASE.filter(c=>!existingIds.includes(c.id))
       .map(c=>({id:c.id, name:c.name, expediente_civil:'', expediente_penal:'', expediente_admin:'', expediente_cdh:''}));
     if(toInsert.length) await sbUpsert('clientes', toInsert);
 
+    // Cargar todos los clientes y notas
     const [clientes, notas] = await Promise.all([
       sbGet('clientes','select=*&order=name.asc'),
       sbGet('notas','select=*&order=fecha.asc')
     ]);
-
-    if(!Array.isArray(clientes)) throw new Error('Clientes error: '+JSON.stringify(clientes));
 
     cases = clientes.map(c=>({
       driveId: c.id,
@@ -408,10 +392,11 @@ async function loadData(){
       expedientes: {
         civil:c.expediente_civil||'', penal:c.expediente_penal||'',
         admin:c.expediente_admin||'', cdh:c.expediente_cdh||'',
-        civil_notas:c.notas_civil||'', penal_notas:c.notas_penal||'',
-        admin_notas:c.notas_admin||'', cdh_notas:c.notas_cdh||'',
+        civil_link:c.link_civil||'', penal_link:c.link_penal||'',
+        admin_link:c.link_admin||'', cdh_link:c.link_cdh||'',
       },
-      notas: (Array.isArray(notas)?notas:[]).filter(n=>n.cliente_id===c.id).map(n=>({
+      carpetas: c.carpetas ? JSON.parse(c.carpetas) : [],
+      notas: notas.filter(n=>n.cliente_id===c.id).map(n=>({
         id: n.id, tipo:n.tipo, fecha:n.fecha, texto:n.texto
       }))
     }));
@@ -419,7 +404,6 @@ async function loadData(){
     render();
   } catch(e){
     setSyncDot('err');
-    document.getElementById('cases-grid').innerHTML=`<div class="empty-state"><div class="icon">⚠️</div><p style="color:red;font-size:.75rem">${e.message}</p></div>`;
     console.error(e);
   }
 }
@@ -492,14 +476,59 @@ function openCase(driveId){
   document.getElementById('modal-badges').innerHTML=tipos.map(t=>`<span class="badge ${t}">${labelT(t)}</span>`).join('');
   ['civil','penal','admin','cdh'].forEach(t=>{
     document.getElementById('exp-'+t).value=c.expedientes[t]||'';
-    document.getElementById('exp-'+t+'-notas').value=c.expedientes[t+'_notas']||'';
+    document.getElementById('exp-'+t+'-link').value=c.expedientes[t+'_link']||'';
     document.getElementById('slot-'+t).className=`exp-slot${c.expedientes[t]?.trim()?' has-data '+t:''}`;
   });
   document.getElementById('drive-link').href=`https://drive.google.com/drive/folders/${driveId}`;
   document.getElementById('nota-fecha').value=new Date().toISOString().slice(0,10);
   document.getElementById('nota-texto').value='';
   renderNotas(c);
+  renderCarpetas(c);
   document.getElementById('case-overlay').classList.add('show');
+}
+
+function renderCarpetas(c){
+  const el=document.getElementById('carpetas-list');
+  const carpetas=c.carpetas||[];
+  if(!carpetas.length){
+    el.innerHTML=`<p style="font-size:.78rem;color:var(--muted);margin-bottom:8px">Sin carpetas adicionales.</p>`;
+    return;
+  }
+  el.innerHTML=carpetas.map((cp,i)=>`
+    <div class="carpeta-item">
+      <span class="carpeta-name">📁 ${cp.nombre}</span>
+      <a href="${cp.link}" target="_blank">${cp.link}</a>
+      <button class="btn-del-carpeta" onclick="deleteCarpeta(${i})">✕</button>
+    </div>`).join('');
+}
+
+function addCarpeta(){
+  const nombre=prompt('Nombre de la carpeta:');
+  if(!nombre?.trim())return;
+  const link=prompt('Link de Drive:');
+  if(!link?.trim())return;
+  const c=cases.find(x=>x.driveId===currentId);
+  if(!c){return;}
+  if(!c.carpetas)c.carpetas=[];
+  c.carpetas.push({nombre:nombre.trim(),link:link.trim()});
+  saveCarpetas(c);
+  renderCarpetas(c);
+}
+
+async function deleteCarpeta(idx){
+  const c=cases.find(x=>x.driveId===currentId);
+  if(!c||!c.carpetas)return;
+  c.carpetas.splice(idx,1);
+  saveCarpetas(c);
+  renderCarpetas(c);
+}
+
+async function saveCarpetas(c){
+  setSyncDot('loading');
+  try{
+    await sbUpsert('clientes',[{id:c.driveId,name:c.name,carpetas:JSON.stringify(c.carpetas||[])}]);
+    setSyncDot('ok');
+  }catch(e){setSyncDot('err');}
 }
 
 function renderNotas(c){
@@ -553,7 +582,7 @@ async function saveCase(){
   if(!c)return;
   ['civil','penal','admin','cdh'].forEach(t=>{
     c.expedientes[t]=document.getElementById('exp-'+t).value.trim();
-    c.expedientes[t+'_notas']=document.getElementById('exp-'+t+'-notas').value.trim();
+    c.expedientes[t+'_link']=document.getElementById('exp-'+t+'-link').value.trim();
   });
   setSyncDot('loading');
   try {
@@ -563,10 +592,11 @@ async function saveCase(){
       expediente_penal:c.expedientes.penal,
       expediente_admin:c.expedientes.admin,
       expediente_cdh:c.expedientes.cdh,
-      notas_civil:c.expedientes.civil_notas,
-      notas_penal:c.expedientes.penal_notas,
-      notas_admin:c.expedientes.admin_notas,
-      notas_cdh:c.expedientes.cdh_notas,
+      link_civil:c.expedientes.civil_link,
+      link_penal:c.expedientes.penal_link,
+      link_admin:c.expedientes.admin_link,
+      link_cdh:c.expedientes.cdh_link,
+      carpetas:JSON.stringify(c.carpetas||[]),
     }]);
     setSyncDot('ok');
     render();closeModal();
@@ -609,33 +639,17 @@ async function openNewCase(){
 }
 
 
-const mBlob=new Blob([JSON.stringify({name:"SLM Abogados — Expedientes",short_name:"SLM Casos",start_url:"./",display:"standalone",background_color:"#F4F3EF",theme_color:"#1A1F2E"})],{type:'application/json'});
-document.head.insertAdjacentHTML('beforeend',`<link rel="manifest" href="${URL.createObjectURL(mBlob)}">`);
-var dp;
+// Manifest is served as external manifest.json file
+let dp;
 window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();dp=e;document.getElementById('install-banner').style.display='flex';});
 document.getElementById('btn-install').onclick=async()=>{if(!dp)return;dp.prompt();await dp.userChoice;dp=null;document.getElementById('install-banner').style.display='none';};
 document.getElementById('btn-ix').onclick=()=>{document.getElementById('install-banner').style.display='none';};
 
 // ─── PWA ─────────────────────────────────────────────────────
-const _swCode = `
-const CACHE='slm-v1';
-self.addEventListener('install',e=>{self.skipWaiting();});
-self.addEventListener('activate',e=>{self.clients.claim();});
-self.addEventListener('fetch',e=>{e.respondWith(fetch(e.request).catch(()=>new Response('')));});
-`;
-const _swBlob = new Blob([_swCode],{type:'application/javascript'});
-const _swURL = URL.createObjectURL(_swBlob);
 if('serviceWorker' in navigator){
-  navigator.serviceWorker.register(_swURL).then(()=>{
-    // Register inline manifest after SW
-    const m={name:"SLM Abogados — Expedientes",short_name:"SLM Casos",start_url:"./",display:"standalone",background_color:"#F4F3EF",theme_color:"#1A1F2E",icons:[{src:"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' fill='%231A1F2E'/%3E%3Ctext y='130' x='96' text-anchor='middle' font-size='100'%3E%E2%9A%96%EF%B8%8F%3C/text%3E%3C/svg%3E",sizes:"192x192",type:"image/svg+xml",purpose:"any maskable"}]};
-    const mb=new Blob([JSON.stringify(m)],{type:'application/json'});
-    const ml=document.createElement('link');
-    ml.rel='manifest';ml.href=URL.createObjectURL(mb);
-    document.head.appendChild(ml);
-  }).catch(()=>{});
+  navigator.serviceWorker.register('sw.js').catch(()=>{});
 }
-var dp;
+let dp;
 window.addEventListener('beforeinstallprompt',e=>{
   e.preventDefault();dp=e;
   document.getElementById('install-banner').style.display='flex';
@@ -648,6 +662,7 @@ document.getElementById('btn-ix').onclick=()=>{
   document.getElementById('install-banner').style.display='none';
 };
 
+// ─── INIT ─────────────────────────────────────────────────────
 loadData();
 </script>
 </body>
