@@ -649,7 +649,7 @@ document.getElementById('btn-ix').onclick=()=>{document.getElementById('install-
 if('serviceWorker' in navigator){
   navigator.serviceWorker.register('sw.js').catch(()=>{});
 }
-let dp;
+// dp already declared above
 window.addEventListener('beforeinstallprompt',e=>{
   e.preventDefault();dp=e;
   document.getElementById('install-banner').style.display='flex';
